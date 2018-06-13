@@ -3,7 +3,7 @@
     <div>
               <div class="panel-between">
                 <div class="panel-start">
-                  <button class="ui-btn ui-btn-default" @click="navTo('/specifAdd',{id:$route.query.id})"><Icon type="plus-round" color="#0099ff"></Icon>&nbsp;&nbsp;添加规格</button>
+                  <!-- <button class="ui-btn ui-btn-default" @click="navTo('/specifAdd',{id:$route.query.id})"><Icon type="plus-round" color="#0099ff"></Icon>&nbsp;&nbsp;添加规格</button> -->
                 </div>
                 <div class="panel-end">
                   <input type="text" v-model="pubSearchText" class="search-input" placeholder="搜索" @input="pubSearch()">
@@ -17,8 +17,8 @@
                     <img :src="scope.row.image" width="50px" alt="">
                   </template>
                 </el-table-column>
-                <el-table-column prop="title" label="名称" > </el-table-column>
-                <el-table-column prop="price" label="价格" > </el-table-column>
+                <el-table-column prop="productName" label="名称" > </el-table-column>
+                
                 <el-table-column prop="createTime" label="发布时间" > </el-table-column>
                 
                 <el-table-column label="操作" width="120">
@@ -26,7 +26,7 @@
                     <el-dropdown size="mini" split-button type="default" trigger="click">
                       <div>cz</div> 
                       <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item><div style="width:100px;text-align:Center" @click="navTo('/specifUpdate',{id:scope.row._id})">修改</div></el-dropdown-item>
+                        <el-dropdown-item><div style="width:100px;text-align:Center" @click="navTo('/specifUpdate',{id:scope.row._id})">排序</div></el-dropdown-item>
                         <el-dropdown-item><div style="width:100px;text-align:Center" @click="multiDel(scope.row._id,'删除')">删除</div></el-dropdown-item>
                       </el-dropdown-menu>
                     </el-dropdown>
@@ -115,7 +115,7 @@ export default {
             data.params = name == false ? JSON.stringify({isShow : false}):JSON.stringify({isShow : true});
           }
           $.ajax({
-            url: sessionStorage.getItem("API") + "api/pro/update",
+            url: sessionStorage.getItem("API") + "api/rec/update",
             type: "POST",
             data: data,
             dataType: "json",
@@ -173,10 +173,10 @@ export default {
     getPubList() {
       var that = this;
       $.ajax({
-        url: sessionStorage.getItem("API") + "api/specif/find",
+        url: sessionStorage.getItem("API") + "api/rec/find",
         type: "POST",
         data: {
-          params: JSON.stringify({isDelete:false,productId:this.$route.query.id})
+          params: JSON.stringify({isDelete:false,type:'1'})
         },
         dataType: "json",
         success(res) {

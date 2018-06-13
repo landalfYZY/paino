@@ -1,5 +1,19 @@
 var paino = [
   {
+    label:'推广管理',
+    icon:'',
+    children:[
+      {
+        label: '推荐',
+        path: '/groom'
+      },
+      {
+        label: '热门',
+        path: '/hot'
+      },
+    ]
+  },
+  {
     label:'图库',
     icon:'',
     children:[

@@ -14,6 +14,8 @@ import goodsList from '../components/paino/goodsList'
 import goodsUpdate from '../components/paino/goodsUpset'
 import specifAdd from '../components/paino/specifAdd'
 import specifList from '../components/paino/specifList'
+import groom from '../components/paino/groom'
+import hot from '../components/paino/hot'
 
 Vue.use(Router)
 
@@ -31,6 +33,8 @@ export default new Router({
 
       { path:'/specifAdd',name:'添加规格',component:specifAdd},
       { path:'/specifList',name:'规格列表',component:specifList},
+      { path:'/groom',name:'推荐',component:groom},
+      { path:'/hot',name:'热门',component:hot},
     ]},
     
   ]

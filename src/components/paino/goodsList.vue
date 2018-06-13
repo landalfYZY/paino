@@ -37,6 +37,8 @@
                         <el-dropdown-item><div style="width:100px;text-align:Center" @click="navTo('/goodsUpdate',{id:scope.row._id})">修改商品</div></el-dropdown-item>
                         <el-dropdown-item><div style="width:100px;text-align:Center" @click="navTo('/specifList',{id:scope.row._id})">规格列表</div></el-dropdown-item>
                         <el-dropdown-item><div style="width:100px;text-align:Center" @click="navTo('/specifAdd',{id:scope.row._id})">添加规格</div></el-dropdown-item>
+                        <el-dropdown-item><div style="width:100px;text-align:Center" @click="addToRec(scope.row._id,scope.row.title,scope.row.carousel[0].url,1)">设为推荐</div></el-dropdown-item>
+                        <el-dropdown-item><div style="width:100px;text-align:Center" @click="addToRec(scope.row._id,scope.row.title,scope.row.carousel[0].url,2)">设为热门</div></el-dropdown-item>
                         <el-dropdown-item><div style="width:100px;text-align:Center" @click="multiDel(scope.row._id,'删除')">删除</div></el-dropdown-item>
                       </el-dropdown-menu>
                     </el-dropdown>
@@ -104,7 +106,19 @@ export default {
     this.getPubList();
   },
   methods: {
-    
+    addToRec(id,name,image,type){
+      var that = this
+      $.post(sessionStorage.getItem("API") + "api/rec/insert",{
+        productId:id,
+        image:image,
+        productName:name,
+        type:type
+      },function(res){
+        if(res.code){
+          that.$Message.success(res.msg);
+        }
+      })
+    },
     filterTagStatus(value, row) {
       return row.isShow === value;
     },
