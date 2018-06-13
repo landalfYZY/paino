@@ -9,8 +9,6 @@
       <div class="panel-between">
         <div class="panel-start">
           <button class="ui-btn ui-btn-default" @click="delSection()"><Icon type="trash-a" color="#FF3333"></Icon>&nbsp;&nbsp;批量删除</button>
-          <button class="ui-btn ui-btn-default" @click="categoryModal = true"><Icon type="plus-circled" color="#0099ff" ></Icon>&nbsp;&nbsp;添加分类</button>
-          <button class="ui-btn ui-btn-default" @click="moveModel = true"><Icon type="ios-download" color="#0099ff"></Icon>&nbsp;&nbsp;移动到分类</button>
           <button class="ui-btn ui-btn-default" @click="isUploadFile = true"><Icon type="upload" color="#0099ff"></Icon>&nbsp;&nbsp;上传文件</button>
           <!-- <button class="ui-btn ui-btn-default"><Icon type="ios-cloud-download" color="#0099ff"></Icon>&nbsp;&nbsp;下载文件</button> -->
         </div>
@@ -45,16 +43,16 @@
       </div>
       <div class="gallery-list">
         <div v-show="listShow" class="gallery-item" v-for="(item,index) in list" :key="index">
-          <div class="gallery-bg" :style="'background:url('+item.host+item.thumbnail+');background-position:center;background-size:cover'">
+          <div class="gallery-bg" :style="'background:url('+item.url+');background-position:center;background-size:cover'">
             <el-checkbox class="checkbox" v-model="item.active" @change="itemCheckIt(item)"></el-checkbox>
             <div class="gallery-content">
               <div class="panel-between">
-                <div class="font-white">{{item.subtype}}</div>
+                <div class="font-white">{{item.mimtype}}</div>
                 <div class="font-white">{{(item.size/1024/1024) > 1 ? (item.size/1024/1024).toFixed(0)+'M':(item.size/1024).toFixed(0)+'K'}}</div>
               </div>
               <div class="do-look panel-between " style="margin-top:2px">
                 <div class="ui-link-default" @click="openFancyBox($event)">查看</div>
-                <div :class="'ui-link-default tag-read'+index" :data-clipboard-text="item.host+item.path" @click="copyLink(index,item.host+item.path,item.originName)" >复制图片链接</div>
+                <div :class="'ui-link-default tag-read'+index" :data-clipboard-text="item.host+item.path" @click="copyLink(index,item.url,item.fileName)" >复制图片链接</div>
               </div>
             </div>
           </div>
@@ -68,14 +66,7 @@
         </el-pagination>
         <div class="clearfix"></div>
       </div>
-      <Modal v-model="categoryModal" title="添加分类" width="300" ok-text="确定" cancel-text="取消" @on-ok="categoryAdd" >
-        <p><Input v-model="categoryContent" size="large" placeholder="请输入分类名称" /></p>
-      </Modal>
-      <Modal v-model="moveModel" title="移动到分类" width="300" ok-text="确定" cancel-text="取消" @on-ok="categoryMove" >
-        <p><Select v-model="moveCategoryText" >
-              <Option v-for="item in categoryList" :value="item.sunwouId" :key="item.name">{{ item.name }}</Option>
-          </Select></p>
-      </Modal>
+      
       <Modal v-model="isUploadFile" title="上传文件" width="300" ok-text="确定" cancel-text="取消">
         <p>
           <el-upload
@@ -173,37 +164,13 @@ export default {
   mounted() {
     this.API2 = sessionStorage.getItem("API2");
     this.getList();
-    this.getCategory();
+    //this.getCategory();
   },
   methods: {
     openFancyBox(e) {
       console.log(e);
     },
-    //移动到分类
-    categoryMove() {
-      var that = this;
-      var ids = [];
-      for (var i in this.selectionList) {
-        ids.push(this.selectionList[i].sunwouId);
-      }
-      $.ajax({
-        url: sessionStorage.getItem("API2") + "filesystem/updatemu",
-        type: "POST",
-        data: {
-          ids: ids.toString(),
-          category: this.moveCategoryText
-        },
-        dataType: "json",
-        success(res) {
-          if (res.code) {
-            that.$Message.success(res.msg);
-            that.getList();
-          } else {
-            that.$Message.error(res.msg);
-          }
-        }
-      });
-    },
+    
     //批量删除
     delSection() {
       var that = this;
@@ -239,46 +206,7 @@ export default {
         }
       });
     },
-    //添加分类
-    categoryAdd() {
-      var that = this;
-      $.ajax({
-        url: sessionStorage.getItem("API2") + "filesystem/categoryadd",
-        type: "POST",
-        data: {
-          userId: localStorage.getItem("userId"),
-          name: this.categoryContent
-        },
-        dataType: "json",
-        success(res) {
-          if (res.code) {
-            that.$Message.success(res.msg);
-            that.getCategory();
-          } else {
-            that.$Message.error(res.msg);
-          }
-        }
-      });
-    },
-    //查询分类
-    getCategory() {
-      var that = this;
-      $.ajax({
-        url: sessionStorage.getItem("API2") + "filesystem/categoryfind",
-        type: "POST",
-        data: {
-          query: JSON.stringify(this.cateQuery)
-        },
-        dataType: "json",
-        success(res) {
-          if (res.code) {
-            that.categoryList = res.params.list;
-          } else {
-            that.$Message.error(res.msg);
-          }
-        }
-      });
-    },
+    
     //选择图片
     itemCheckIt(item) {
       if (item.active) {
@@ -286,7 +214,7 @@ export default {
       } else {
         var temp = -1;
         for (var i in this.selectionList) {
-          if (this.selectionList[i].sunwouId == item.sunwouId) {
+          if (this.selectionList[i]._id == item._id) {
             temp = i;
           }
         }
@@ -411,14 +339,14 @@ export default {
         success(res) {
           that.listShow = false;
           if (res.code) {
-            var li = res.params.list;
+            var li = res.result;
             for (var i in li) {
               li[i].active = false;
-              li[i].url = li[i].host + li[i].path;
+              li[i].url = li[i].path+'/' + li[i].fileName;
             }
 
             that.list = li;
-            that.total = res.params.total;
+            //that.total = res.params.total;
             that.checkedAll = false;
             that.selectionList = [];
           } else {
@@ -445,7 +373,7 @@ export default {
       this.formatTitle = label;
       var temp1 = -1;
       for (var i in this.query.wheres) {
-        if (this.query.wheres[i].value == "subtype") {
+        if (this.query.wheres[i].value == "mimetype") {
           temp1 = i;
         }
       }
@@ -456,7 +384,7 @@ export default {
       } else {
         if (temp1 == -1) {
           this.query.wheres.push({
-            value: "subtype",
+            value: "mimetype",
             opertionType: "like",
             opertionValue: value
           });
@@ -467,32 +395,7 @@ export default {
 
       this.getList();
     },
-    changeCategoryTitle(name, id) {
-      this.categoryTitle = name;
-      var temp1 = -1;
-      for (var i in this.query.wheres) {
-        if (this.query.wheres[i].value == "category") {
-          temp1 = i;
-        }
-      }
-      if (id == "all") {
-        if (temp1 != -1) {
-          this.query.wheres.splice(temp1, 1);
-        }
-      } else {
-        if (temp1 == -1) {
-          this.query.wheres.push({
-            value: "category",
-            opertionType: "like",
-            opertionValue: id
-          });
-        } else {
-          this.query.wheres[temp1].opertionValue = value;
-        }
-      }
-
-      this.getList();
-    }
+    
   }
 };
 </script>

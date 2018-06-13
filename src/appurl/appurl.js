@@ -15,7 +15,11 @@ var paino = [
     children:[
       {
         label: '商品列表',
-        path: '/appmsg'
+        path: '/goodsList'
+      },
+      {
+        label: '新增商品',
+        path: '/goodsAdd'
       },
     ]
   }
