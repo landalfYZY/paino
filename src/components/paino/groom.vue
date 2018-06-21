@@ -37,9 +37,7 @@
                 :current-page="pubQuery.pages.currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="pubQuery.pages.size"
                 layout="total, sizes, prev, pager, next, jumper" :total="pubTotal">
               </el-pagination> -->
-              <div class="clearfix"></div>
-              
-            
+              <div class="clearfix"></div>       
     </div>
   </transition>
 </template>
